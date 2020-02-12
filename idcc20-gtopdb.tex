@@ -13,7 +13,7 @@
 \input{config/custom-command}
 \usepackage{verbatim}
 % Information
-\title{Hopefully something mildly interesting}
+\title{Cross-tier web programming for curated databases: A case study}
 \author{Simon Fowler}
 \institute{University of Edinburgh}
 \date{12th March 2019}
@@ -36,12 +36,149 @@ $
 \end{frame}
 
 
-\begin{frame}{A sample frame}
+\begin{frame}{Curated Scientific Databases}
+\end{frame}
+
+\begin{frame}{GtoPdb: IUPHAR/BPS Guide to PHARMACOLOGY}
+\end{frame}
+
+\begin{frame}{The vision: Language support for curation}
+\end{frame}
+
+\begin{frame}{Cross-tier web programming}
+
+  \begin{center}
+    \includegraphics[width=0.75\textwidth]{images/3tier.pdf}
+  \end{center}
+
   \begin{fullpageitemize}
-    \item Beamer is cool if people can't tell you're using Beamer
+  \item Curated databases normally a collection of applications:
+    \begin{itemize}
+      \itemR Database, web frontend, curation application
+    \end{itemize}
+    \vspace{1em}
+  \item \textbf{Cross-tier} programming languages:
+    \begin{itemize}
+      \itemR Client, server, and database code written in same language
+      \itemR \textbf{Links}: research cross-tier programming language developed
+        at UoE since 2006
+    \end{itemize}
+    \vspace{1em}
+  \item \emph{Goal: programming language support for curation functionality}
+    \begin{itemize}
+      \itemR Previous work has already added provenance tracking!
+    \end{itemize}
   \end{fullpageitemize}
 \end{frame}
 
-\framecard{{\color{white}\bigtext{A section separator}}}
+\begin{frame}[fragile]{Language-Integrated Query}
+
+  \begin{minipage}[t]{0.45\textwidth}
+    {\large \textbf{SQL}}
+    \begin{lstlisting}[language=sql]
+SELECT name FROM ligand
+WHERE approved
+    \end{lstlisting}
+  \end{minipage}
+  %
+  \hfill
+  %
+  \begin{minipage}[t]{0.45\textwidth}
+    {\large \textbf{Links}}
+    \begin{lstlisting}[language=Links]
+for (l <-- ligand)
+  where (l.approved)
+  [ l.name ]
+    \end{lstlisting}
+  \end{minipage}
+
+  \begin{fullpageitemize}
+  \item \emph{Language-integrated Query}: Allow database queries to be written in host language, rather than SQL
+  \item \emph{Benefits}:
+    \begin{itemize}
+      \itemR Full static typechecking of queries
+      \itemR Only one language to learn
+      \itemR Abstraction: parts of queries can be reused
+    \end{itemize}
+  \end{fullpageitemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nested Queries}
+
+  \begin{lstlisting}[language=Links]
+for ( l <-- ligand )
+  [( name = l.name,
+     synonyms =
+       for ( l2s <-- ligand2synonym )
+         where ( l2s.ligand_id == l.ligand_id )
+         [ l2s.synonym ]
+  )]
+  \end{lstlisting}
+
+  \begin{fullpageitemize}
+    \item Links queries need not be flat: can have arbitrarily-nested collections
+    \item \emph{Extensively} used in GtoPdb case study
+    \item \emph{Static bound on query count}: number of collection types appearing in output
+  \end{fullpageitemize}
+
+\end{frame}
+
+\begin{frame}{Implementing GtoPdb in Links}
+\end{frame}
+
+\framecard{{\color{white}\bigtext{Evaluation}}}
+
+\begin{frame}{Methodology}
+
+  \begin{fullpageitemize}
+  \item {\Large \textbf{Query count} }
+    \begin{itemize}
+      \itemR Number of queries performed per page load
+      \itemR \emph{Expectation}: Links lower due to static query bounds
+    \end{itemize}
+    \vspace{1em}
+  \item {\Large \textbf{Query handling time} }
+    \begin{itemize}
+      \itemR Time taken to execute query and process results into data
+        structures
+      \itemR \emph{Expectation}: Either Links performs better due to fewer queries, or
+        Java performs better due to faster marshalling
+    \end{itemize}
+    \vspace{1em}
+
+  \item {\Large \textbf{Page build time} }
+    \begin{itemize}
+      \itemR Time between request handler invocation and response being ready
+%     \itemR Useful to consider both including \emph{and} excluding query
+%       handling time
+      \itemR \emph{Expectation}: Java to perform better due to JIT and maturity
+    \end{itemize}
+
+  \end{fullpageitemize}
+    \vspace{1em}
+
+  Performance measurements performed locally, using an instrumented Links
+  interpreter and modified GtoPdb code
+\end{frame}
+
+\begin{frame}{Query Count}
+\end{frame}
+
+\begin{frame}{Query Execution Time}
+\end{frame}
+
+\begin{frame}{Page Build Time}
+\end{frame}
+
+\framecard{{\color{white}\bigtext{Future Work}}}
+
+\begin{frame}{Curation Interface}
+\end{frame}
+
+\begin{frame}{Temporal Data Management}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\end{frame}
 
 \end{document}
