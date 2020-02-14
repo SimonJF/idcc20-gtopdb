@@ -16,7 +16,7 @@
 \title{Cross-tier web programming for curated databases: A case study}
 \author{Simon Fowler}
 \institute{University of Edinburgh}
-\date{12th March 2019}
+\date{19th February 2020}
 
 \begin{document}
 
@@ -40,6 +40,27 @@ $
 \end{frame}
 
 \begin{frame}{GtoPdb: IUPHAR/BPS Guide to PHARMACOLOGY}
+  \begin{minipage}{0.525\textwidth}
+    \begin{fullpageitemize}
+    \item Popular curated database detailing around 3000 pharmacological targets (e.g.,
+      receptors) and 9700 ligands (e.g., drugs)
+      \vspace{1em}
+    \item Initially IUPHAR-DB, started in 2003
+      \vspace{1em}
+    \item Written in Java. Scale (as of late 2019):
+      \begin{itemize}
+        \itemR \emph{89MB} of data in \emph{181 tables}
+        \itemR \emph{17935 lines} of data transformation code
+        \itemR \emph{28819 lines} of JSP rendering code
+        \itemR \emph{43129 lines} of data access code
+      \end{itemize}
+    \end{fullpageitemize}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\textwidth}
+    \includegraphics[width=\textwidth]{images/gtopdb-screenshot.png}
+  \end{minipage}
+
 \end{frame}
 
 \begin{frame}{The vision: Language support for curation}
@@ -131,13 +152,13 @@ for ( l <-- ligand )
 \begin{frame}{Methodology}
 
   \begin{fullpageitemize}
-  \item {\Large \textbf{Query count} }
+  \item<1->{\Large \textbf{Query count} }
     \begin{itemize}
       \itemR Number of queries performed per page load
       \itemR \emph{Expectation}: Links lower due to static query bounds
     \end{itemize}
     \vspace{1em}
-  \item {\Large \textbf{Query handling time} }
+  \item<2->{\Large \textbf{Query handling time} }
     \begin{itemize}
       \itemR Time taken to execute query and process results into data
         structures
@@ -145,30 +166,124 @@ for ( l <-- ligand )
         Java performs better due to faster marshalling
     \end{itemize}
     \vspace{1em}
-
-  \item {\Large \textbf{Page build time} }
+  \item<3->{\Large \textbf{Page build time} }
     \begin{itemize}
       \itemR Time between request handler invocation and response being ready
 %     \itemR Useful to consider both including \emph{and} excluding query
 %       handling time
       \itemR \emph{Expectation}: Java to perform better due to JIT and maturity
     \end{itemize}
-
   \end{fullpageitemize}
     \vspace{1em}
 
+    \onslide<4->{
   Performance measurements performed locally, using an instrumented Links
-  interpreter and modified GtoPdb code
+  interpreter and modified GtoPdb code. Sample of 150 random pages from
+  object data and disease data pages.
+}
 \end{frame}
 
 \begin{frame}{Query Count}
+
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[scale=0.4]{images/objectdisplay_querycount_box.pdf}
+
+    \begin{center}
+      Object data page
+    \end{center}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[scale=0.4]{images/diseasedisplay_querycount_box.pdf}
+
+    \begin{center}
+      Disease data page
+    \end{center}
+  \end{minipage}
+  \vspace{1em}
+
+  \begin{fullpageitemize}
+  \itemR As expected, Links query count lower and more predictable
+  \end{fullpageitemize}
 \end{frame}
 
-\begin{frame}{Query Execution Time}
+\begin{frame}{Query Handling Time}
+
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[scale=0.4]{images/objectdisplay_querytime_box.pdf}
+
+    \begin{center}
+      Object data page
+    \end{center}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[scale=0.4]{images/diseasedisplay_querytime_box.pdf}
+
+    \begin{center}
+      Disease data page
+    \end{center}
+  \end{minipage}
+  \vspace{1em}
+
+  \begin{fullpageitemize}
+  \itemR Links far more predictable due to more predictable query counts
+  \itemR Median query time slightly higher on object display page, likely due to marshalling
+  \end{fullpageitemize}
 \end{frame}
 
 \begin{frame}{Page Build Time}
+
+\begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[scale=0.3]{images/objectdisplay_pagebuild_excl_box.pdf}
+    ~
+    \includegraphics[scale=0.3]{images/objectdisplay_pagebuild_incl_box.pdf}
+
+    \begin{center}
+      Object data page
+    \end{center}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[scale=0.3]{images/diseasedisplay_pagebuild_excl_box.pdf}
+    ~
+    \includegraphics[scale=0.3]{images/diseasedisplay_pagebuild_incl_box.pdf}
+
+    \begin{center}
+      Disease data page
+    \end{center}
+  \end{minipage}
+  \vspace{1em}
+
+  \begin{fullpageitemize}
+  \itemR As expected, Java page generation \emph{much} faster due to maturity
+  \itemR Outliers in Links due to (slow) parsing of data fields for large pages
+  \end{fullpageitemize}
 \end{frame}
+
+\begin{frame}{Disease and Ligand Lists}
+
+  \centering
+  \includegraphics[scale=0.3]{images/diseaselist_stacked.pdf}
+  \vspace{1em}
+
+  \begin{fullpageitemize}
+  \itemR List of all diseases and ligands
+  \itemR Query counts in Java: 8995 (disease list) and 30479 (ligand list)
+  \itemR \emph{Query counts in Links: 2!}
+    \begin{itemize}
+      \itemR \emph{Much} lower in Links due to nested queries \& no ORM used
+    \end{itemize}
+  \end{fullpageitemize}
+
+\end{frame}
+
 
 \framecard{{\color{white}\bigtext{Future Work}}}
 
