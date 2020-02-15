@@ -14,8 +14,9 @@
 \usepackage{verbatim}
 % Information
 \title{Cross-tier web programming for curated databases: A case study}
-\author{Simon Fowler}
-\institute{University of Edinburgh}
+\author{Simon Fowler$^1$, Simon D.\ Harding$^1$, Joanna, Sharman$^2$, James Cheney$^1$}
+\institute{University of Edinburgh$^1$\\
+  Novo Nordisk$^2$}
 \date{19th February 2020}
 
 \begin{document}
@@ -31,13 +32,65 @@ $
 \renewcommand*{\arraystretch}{1.8}
 \begin{array}{r}
    \includegraphics[height=0.7cm, keepaspectratio]{images/logos/inf_uoe.png} \\
+   \includegraphics[height=1.25cm,
+   keepaspectratio]{images/logos/erc-logo.jpg} \\
 \end{array}
 $
 \end{frame}
 
 
 \begin{frame}{Curated Scientific Databases}
+
+  \begin{fullpageitemize}
+  \item {\LARGE \textbf{Curated Databases:}}
+    \begin{itemize}
+      \itemR ``databases that are populated and updated with a great deal of human effort'' (Buneman et al., 2008)
+      \itemR Examples: CIA World Factbook, GtoPdb
+    \end{itemize}
+    \vspace{1em}
+  \item {\LARGE \textbf{Curation challenges:}}
+    \begin{itemize}
+      \itemR Annotation propagation, provenance
+        tracking, citation, archiving\ldots
+      \itemR Have to be hand-crafted for every curated DB ---
+        often with very stretched resources
+    \end{itemize}
+    \vspace{1em}
+  \item {\LARGE \textbf{Ultimate goal: programming
+      language support for curation
+  functionality}}
+    \begin{itemize}
+      \itemR Previous work (Fehrenbach \& Cheney, 2018) has already added
+        provenance tracking!
+    \end{itemize}
+  \end{fullpageitemize}
 \end{frame}
+
+\begin{frame}{Cross-tier web programming}
+
+  \begin{center}
+    \includegraphics[width=0.75\textwidth]{images/3tier.pdf}
+  \end{center}
+
+  \begin{fullpageitemize}
+  \item Curated databases normally a
+    \emph{collection of applications}:
+    \begin{itemize}
+      \itemR Database, web frontend, curation application
+    \end{itemize}
+    \vspace{1em}
+  \item \textbf{Cross-tier} programming languages:
+    \begin{itemize}
+      \itemR Client, server, and database code written in same language
+      \itemR \textbf{Links}: research cross-tier programming language developed
+        at UoE since 2006
+    \end{itemize}
+    \vspace{1em}
+  \item Before considering curation support, \emph{can cross-tier programming
+    languages handle a real-world case study?}
+  \end{fullpageitemize}
+\end{frame}
+
 
 \begin{frame}{GtoPdb: IUPHAR/BPS Guide to PHARMACOLOGY}
   \begin{minipage}{0.525\textwidth}
@@ -46,6 +99,9 @@ $
       receptors) and 9700 ligands (e.g., drugs)
       \vspace{1em}
     \item Initially IUPHAR-DB, started in 2003
+      \vspace{1em}
+    \item Manually updated by curation team at
+      UoE, on advice of subcommittees
       \vspace{1em}
     \item Written in Java. Scale (as of late 2019):
       \begin{itemize}
@@ -63,33 +119,45 @@ $
 
 \end{frame}
 
-\begin{frame}{The vision: Language support for curation}
-\end{frame}
+\framecard{{\color{white}\bigtext{Implementing GtoPdb in Links}}}
 
-\begin{frame}{Cross-tier web programming}
+\begin{frame}[fragile]{GtoPdb Page Lifecycle}
+
+  \begin{minipage}{0.3\textwidth}
+     % TODO: Diagram (TiKZ?)
+    \begin{tikzpicture}[node distance=1.5cm]
+      \node (0) [diagnode] { Receive request };
+      \node (1) [diagnode, below of=0]{ Query relevant data };
+      \node (2) [diagnode, below of=1]{ Parse data fields };
+      \node (3) [diagnode, below of=2]{ Query referenced ligands and references };
+      \node (4) [diagnode, below of=3]{ Generate page };
+
+      \draw [arrow] (0) -- (1);
+      \draw [arrow] (1) -- (2);
+      \draw [arrow] (2) -- (3);
+      \draw [arrow] (3) -- (4);
+    \end{tikzpicture}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.575\textwidth}
+    {\small
+      \begin{verbatim}
+Some substituted benzazepines such as SKF-83959
+are G-protein biased agonists of the dopamine
+D<sub>1</sub> receptor and fail to activate
+&beta;-arrestin recruitment <Reference id=28036/>;
+their ability to signal through
+G<sub>q</sub>-mediated pathways has been
+controversial <Reference id=33435/>.
+\end{verbatim}
+  }
 
   \begin{center}
-    \includegraphics[width=0.75\textwidth]{images/3tier.pdf}
+    \includegraphics[width=1.075\textwidth]{images/rendered.png}
   \end{center}
+  \end{minipage}
 
-  \begin{fullpageitemize}
-  \item Curated databases normally a collection of applications:
-    \begin{itemize}
-      \itemR Database, web frontend, curation application
-    \end{itemize}
-    \vspace{1em}
-  \item \textbf{Cross-tier} programming languages:
-    \begin{itemize}
-      \itemR Client, server, and database code written in same language
-      \itemR \textbf{Links}: research cross-tier programming language developed
-        at UoE since 2006
-    \end{itemize}
-    \vspace{1em}
-  \item \emph{Goal: programming language support for curation functionality}
-    \begin{itemize}
-      \itemR Previous work has already added provenance tracking!
-    \end{itemize}
-  \end{fullpageitemize}
+
 \end{frame}
 
 \begin{frame}[fragile]{Language-Integrated Query}
@@ -114,8 +182,12 @@ for (l <-- ligand)
   \end{minipage}
 
   \begin{fullpageitemize}
-  \item \emph{Language-integrated Query}: Allow database queries to be written in host language, rather than SQL
-  \item \emph{Benefits}:
+  \item {\Large \emph{Language-integrated Query:}}
+    \begin{itemize}
+      \itemR Allow database queries to be written in host language, rather than SQL
+    \end{itemize}
+    \vspace{1em}
+    \item { \Large \emph{Benefits}:}
     \begin{itemize}
       \itemR Full static typechecking of queries
       \itemR Only one language to learn
@@ -142,9 +214,6 @@ for ( l <-- ligand )
     \item \emph{Static bound on query count}: number of collection types appearing in output
   \end{fullpageitemize}
 
-\end{frame}
-
-\begin{frame}{Implementing GtoPdb in Links}
 \end{frame}
 
 \framecard{{\color{white}\bigtext{Evaluation}}}
@@ -285,15 +354,55 @@ for ( l <-- ligand )
 \end{frame}
 
 
-\framecard{{\color{white}\bigtext{Future Work}}}
+\framecard{{\color{white}\bigtext{Wrapping Up}}}
 
-\begin{frame}{Curation Interface}
+\begin{frame}{Ongoing Work: Curation Interface}
+
+  \begin{minipage}{0.45\textwidth}
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/curation-interface.png}
+  \end{center}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+  \begin{fullpageitemize}
+  \item {\large \textbf{Ongoing work: Curation interface}}
+    \begin{itemize}
+      \itemR Implemented two illustrative pages from curation interface
+      \itemR Aim to use these as realistic case study for curation functionality
+    \end{itemize}
+  \end{fullpageitemize}
+\end{minipage}
 \end{frame}
 
-\begin{frame}{Temporal Data Management}
-\end{frame}
+\begin{frame}[fragile]{Conclusion}
 
-\begin{frame}{Conclusion}
+  \begin{fullpageitemize}
+  \item {\LARGE \textbf{Summary}}
+    \begin{itemize}
+      \itemR \textbf{Curated databases}:
+        \begin{itemize}
+          \itemR Databases maintained using much human effort
+          \itemR Consist of multiple applications: database, web
+            frontend, curation interface
+        \end{itemize}
+%
+      \itemR Cross-tier programming languages: client, server, database
+        code in \emph{single language}
+      \itemR First case study of reimplementing a large-scale curated database
+        in a cross-tier programming language
+      \itemR Performance results: Lower query counts; more predictable and often
+        lower query times; but slower page build times
+    \end{itemize}
+  \end{fullpageitemize}
+
+  {\large
+  \begin{center}
+    \verb+@Simon_JF+\\
+    \verb+simon.fowler@ed.ac.uk+\\
+    \url{http://www.links-lang.org}
+  \end{center}
+}
 \end{frame}
 
 \end{document}

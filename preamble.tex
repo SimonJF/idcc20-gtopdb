@@ -14,6 +14,7 @@
 \usepackage{dirtytalk}
 \usepackage{xparse}% http://ctan.org/pkg/xparse
 \usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\usepackage{tikz}
 \newcommand{\lambdacalc}{\ensuremath{\lambda}-calculus\xspace}
 \newenvironment{fake}[1]{\par\vspace{3pt}\noindent\textbf{#1}\itshape}{\normalfont\ignorespacesafterend\vspace{3pt}\par}
 
@@ -36,6 +37,10 @@
 
 
 % TIKZ STUFF
+
+\tikzstyle{arrow} = [thick,->]
+\tikzstyle{diagnode} = [rectangle, rounded corners, minimum width=5cm, minimum
+height=1cm,text centered, text width=5cm, draw=black, anchor=center, fill=red!30]
 
 
 \usepackage{amsmath,verbatim}
