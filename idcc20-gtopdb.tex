@@ -14,7 +14,7 @@
 \usepackage{verbatim}
 % Information
 \title{Cross-tier web programming for curated databases: A case study}
-\author{Simon Fowler$^1$, Simon D.\ Harding$^1$, Joanna, Sharman$^2$, James Cheney$^1$}
+\author{Simon Fowler$^1$, Simon D.\ Harding$^1$, Joanna Sharman$^2$, James Cheney$^1$}
 \institute{University of Edinburgh$^1$\\
   Novo Nordisk$^2$}
 \date{19th February 2020}
@@ -66,6 +66,32 @@ $
   \end{fullpageitemize}
 \end{frame}
 
+\begin{frame}{GtoPdb: IUPHAR/BPS Guide to PHARMACOLOGY}
+  \begin{minipage}{0.525\textwidth}
+    \begin{fullpageitemize}
+    \item Popular curated database detailing around 3000 pharmacological targets (e.g.,
+      receptors) and 9700 ligands (e.g., drugs)
+      \vspace{1em}
+    \item Initially IUPHAR-DB, started in 2003
+      \vspace{1em}
+    \item Manually updated by 2-3 full-time curation staff at
+      UoE, on advice of subcommittees worldwide
+      \vspace{1em}
+    \item Written in Java. Scale (as of late 2019):
+      \begin{itemize}
+        \itemR \emph{89MB} of data in \emph{181 tables}
+        \itemR \emph{17935 lines} of data transformation code
+        \itemR \emph{28819 lines} of JSP rendering code
+        \itemR \emph{43129 lines} of data access code
+      \end{itemize}
+    \end{fullpageitemize}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\textwidth}
+    \includegraphics[width=\textwidth]{images/gtopdb-screenshot.png}
+  \end{minipage}
+\end{frame}
+
 \begin{frame}{Cross-tier web programming}
 
   \begin{center}
@@ -87,37 +113,10 @@ $
     \end{itemize}
     \vspace{1em}
   \item Before considering curation support, \emph{can cross-tier programming
-    languages handle a real-world case study?}
+    languages handle a real-world case study like GtoPdb?}
   \end{fullpageitemize}
 \end{frame}
 
-
-\begin{frame}{GtoPdb: IUPHAR/BPS Guide to PHARMACOLOGY}
-  \begin{minipage}{0.525\textwidth}
-    \begin{fullpageitemize}
-    \item Popular curated database detailing around 3000 pharmacological targets (e.g.,
-      receptors) and 9700 ligands (e.g., drugs)
-      \vspace{1em}
-    \item Initially IUPHAR-DB, started in 2003
-      \vspace{1em}
-    \item Manually updated by curation team at
-      UoE, on advice of subcommittees
-      \vspace{1em}
-    \item Written in Java. Scale (as of late 2019):
-      \begin{itemize}
-        \itemR \emph{89MB} of data in \emph{181 tables}
-        \itemR \emph{17935 lines} of data transformation code
-        \itemR \emph{28819 lines} of JSP rendering code
-        \itemR \emph{43129 lines} of data access code
-      \end{itemize}
-    \end{fullpageitemize}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.4\textwidth}
-    \includegraphics[width=\textwidth]{images/gtopdb-screenshot.png}
-  \end{minipage}
-
-\end{frame}
 
 \framecard{{\color{white}\bigtext{Implementing GtoPdb in Links}}}
 
@@ -152,9 +151,24 @@ controversial <Reference id=33435/>.
 \end{verbatim}
   }
 
-  \begin{center}
-    \includegraphics[width=1.075\textwidth]{images/rendered.png}
-  \end{center}
+  {
+    \centering
+      \vspace{1em}
+    \Huge
+      \hfill $\Downarrow$ \hfill
+      \vspace{1em}
+  }
+
+  {
+    \small
+Some substituted benzazepines such as SKF-83959
+are G-protein biased agonists of the dopamine
+D$_1$ receptor and fail to activate
+$\beta$-arrestin recruitment [{\color{blue} 17}];
+their ability to signal through
+G$_q$-mediated pathways has been
+controversial [{\color{blue} 32}].
+  }
   \end{minipage}
 
 
@@ -209,11 +223,43 @@ for ( l <-- ligand )
   \end{lstlisting}
 
   \begin{fullpageitemize}
-    \item Links queries need not be flat: can have arbitrarily-nested collections
+    \item Unlike in SQL, Links queries need not be flat: can have arbitrarily-nested collections
     \item \emph{Extensively} used in GtoPdb case study
     \item \emph{Static bound on query count}: number of collection types appearing in output
   \end{fullpageitemize}
 
+\end{frame}
+
+\begin{frame}{Status}
+
+  \begin{minipage}{0.45\textwidth}
+    \begin{center}
+      \small
+      \textbf{Official GtoPdb}
+    \end{center}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/screen-gtopdb-orig.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \begin{center}
+      \small
+      \textbf{Links Reimplementation}
+    \end{center}
+
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/screen-gtopdb-links.png}
+  \end{minipage}
+
+  \vspace{1em}
+
+  {\large
+  \begin{fullpageitemize}
+  \item All major data pages reimplemented
+  \item 10981 lines of Links code, about 4 months of work
+  \item \emph{Underlying database unchanged}
+  \end{fullpageitemize}
+  }
 \end{frame}
 
 \framecard{{\color{white}\bigtext{Evaluation}}}
@@ -254,7 +300,7 @@ for ( l <-- ligand )
 
 \begin{frame}{Query Count}
 
-  \begin{minipage}[t]{0.45\textwidth}
+  \begin{minipage}{0.28\textwidth}
     \centering
     \includegraphics[scale=0.4]{images/objectdisplay_querycount_box.pdf}
 
@@ -263,7 +309,7 @@ for ( l <-- ligand )
     \end{center}
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{0.45\textwidth}
+  \begin{minipage}{0.28\textwidth}
     \centering
     \includegraphics[scale=0.4]{images/diseasedisplay_querycount_box.pdf}
 
@@ -271,16 +317,16 @@ for ( l <-- ligand )
       Disease data page
     \end{center}
   \end{minipage}
-  \vspace{1em}
-
-  \begin{fullpageitemize}
-  \itemR As expected, Links query count lower and more predictable
-  \end{fullpageitemize}
+  \hfill
+  \begin{minipage}{0.375\textwidth}
+    \raggedright
+    As expected, Links query count \emph{lower} and \emph{more predictable}
+  \end{minipage}
 \end{frame}
 
 \begin{frame}{Query Handling Time}
 
-  \begin{minipage}[t]{0.45\textwidth}
+  \begin{minipage}{0.28\textwidth}
     \centering
     \includegraphics[scale=0.4]{images/objectdisplay_querytime_box.pdf}
 
@@ -289,7 +335,7 @@ for ( l <-- ligand )
     \end{center}
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{0.45\textwidth}
+  \begin{minipage}{0.28\textwidth}
     \centering
     \includegraphics[scale=0.4]{images/diseasedisplay_querytime_box.pdf}
 
@@ -297,33 +343,38 @@ for ( l <-- ligand )
       Disease data page
     \end{center}
   \end{minipage}
-  \vspace{1em}
-
-  \begin{fullpageitemize}
-  \itemR Links far more predictable due to more predictable query counts
-  \itemR Median query time slightly higher on object display page, likely due to marshalling
-  \end{fullpageitemize}
+  \hfill
+  \begin{minipage}{0.375\textwidth}
+    \raggedright
+    \begin{fullpageitemize}
+      \item Links far more predictable due to more predictable query counts
+        \vspace{1em}
+      \item Median query time slightly higher on object display page, likely due to marshalling
+    \end{fullpageitemize}
+  \end{minipage}
 \end{frame}
 
 \begin{frame}{Page Build Time}
 
-\begin{minipage}[t]{0.45\textwidth}
+\begin{minipage}[t]{0.48\textwidth}
     \centering
-    \includegraphics[scale=0.3]{images/objectdisplay_pagebuild_excl_box.pdf}
+    \includegraphics[scale=0.33]{images/objectdisplay_pagebuild_excl_box.pdf}
     ~
-    \includegraphics[scale=0.3]{images/objectdisplay_pagebuild_incl_box.pdf}
+    \includegraphics[scale=0.33]{images/objectdisplay_pagebuild_incl_box.pdf}
 
+    \vspace{-0.75em}
     \begin{center}
       Object data page
     \end{center}
   \end{minipage}
   \hfill
-  \begin{minipage}[t]{0.45\textwidth}
+  \begin{minipage}[t]{0.48\textwidth}
     \centering
-    \includegraphics[scale=0.3]{images/diseasedisplay_pagebuild_excl_box.pdf}
+    \includegraphics[scale=0.33]{images/diseasedisplay_pagebuild_excl_box.pdf}
     ~
-    \includegraphics[scale=0.3]{images/diseasedisplay_pagebuild_incl_box.pdf}
+    \includegraphics[scale=0.33]{images/diseasedisplay_pagebuild_incl_box.pdf}
 
+    \vspace{-0.75em}
     \begin{center}
       Disease data page
     \end{center}
@@ -338,18 +389,27 @@ for ( l <-- ligand )
 
 \begin{frame}{Disease and Ligand Lists}
 
+  \begin{minipage}{0.375\textwidth}
   \centering
-  \includegraphics[scale=0.3]{images/diseaselist_stacked.pdf}
-  \vspace{1em}
-
+  \includegraphics[height=0.8\textheight]{images/diseaselist_stacked.pdf}
+  \end{minipage}
+\hfill
+  \begin{minipage}{0.6\textwidth}
   \begin{fullpageitemize}
-  \itemR List of all diseases and ligands
-  \itemR Query counts in Java: 8995 (disease list) and 30479 (ligand list)
-  \itemR \emph{Query counts in Links: 2!}
+  \item {\large List of all diseases and ligands}
+    \vspace{1em}
+  \item {\large Query counts in Java}
     \begin{itemize}
-      \itemR \emph{Much} lower in Links due to nested queries \& no ORM used
+      \itemR 8995 (disease list)
+      \itemR 30479 (ligand list)
+    \end{itemize}
+    \vspace{1em}
+  \item {\large \emph{Query counts in Links: 2!}}
+    \begin{itemize}
+      \itemR \emph{Much} lower due nested queries \& only relevant data queried
     \end{itemize}
   \end{fullpageitemize}
+  \end{minipage}
 
 \end{frame}
 
